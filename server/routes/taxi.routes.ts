@@ -26,7 +26,7 @@ import {
   setTaxiAvailability,
   getTaxiProfile,
   getAvailableTaxis,
-} from "../taxi.storage";
+} from "../taxi.storage.js";
 import {
   insertRideSchema,
   patchRideSchema,

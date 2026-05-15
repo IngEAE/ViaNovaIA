@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { eq, desc, and, sql } from "drizzle-orm";
-import { getDb } from "./storage"; // reutiliza el getDb existente
+import { getDb } from "./storage.js"; // reutiliza el getDb existente
 import {
   rides,
   earnings,
