@@ -26,21 +26,15 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
-let isSetup = false;
+// Initialize routes synchronously
+registerRoutes(httpServer, app).catch(err => {
+  console.error("Failed to register routes:", err);
+});
 
-export default async function handler(req: Request, res: Response) {
-  if (!isSetup) {
-    await registerRoutes(httpServer, app);
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+});
 
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      res.status(status).json({ message });
-    });
-
-    isSetup = true;
-  }
-
-  // Pass the request to the express app
-  return app(req, res);
-}
+export default app;
