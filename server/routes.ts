@@ -1,13 +1,13 @@
 import "dotenv/config";
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, getDb } from "./storage";
 import { registerTaxiRoutes } from "./routes/taxi.routes";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
-import fetch from "node-fetch";
 import { z } from "zod";
-import { insertServiceSchema, insertCommentSchema } from "@shared/schema";
+import { insertServiceSchema, insertCommentSchema, comments } from "@shared/schema";
+import { and, eq, sql as drizzleSql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendWelcomeEmail, sendPasswordResetEmail, sendPasswordChangedEmail } from "./mailer";
@@ -477,9 +477,7 @@ export async function registerRoutes(
     try {
       const { id } = req.params;
       const { username } = req.body;
-      const { and, eq } = await import("drizzle-orm");
-      const { comments } = await import("@shared/schema");
-      const db = (await import("./storage")).getDb();
+      const db = getDb();
 
       await db.delete(comments).where(and(eq(comments.id, id), eq(comments.authorUsername, username)));
       res.json({ success: true, message: "Comentario eliminado" });
@@ -491,8 +489,7 @@ export async function registerRoutes(
   // ─── Migration endpoint ────────────────────────────────────────────────────
   app.get("/api/migrate", async (req, res, next) => {
     try {
-      const { sql: drizzleSql } = await import("drizzle-orm");
-      const db = (await import("./storage")).getDb();
+      const db = getDb();
 
 
       // Enum: service_category
@@ -726,8 +723,7 @@ export async function registerRoutes(
 
       // Update vehicle data in users table if taxi
       if (role === "taxi" && (vehicleType || plate || phone)) {
-        const db = (await import("./storage")).getDb();
-        const { sql: drizzleSql } = await import("drizzle-orm");
+        const db = getDb();
         if (vehicleType) await db.execute(drizzleSql`UPDATE users SET vehicle_type = ${vehicleType} WHERE id = ${user.id}`);
         if (plate) await db.execute(drizzleSql`UPDATE users SET plate = ${plate} WHERE id = ${user.id}`);
         if (phone) await db.execute(drizzleSql`UPDATE users SET phone = ${phone} WHERE id = ${user.id}`);
@@ -796,8 +792,7 @@ export async function registerRoutes(
       if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
       // Update in users table
-      const db = (await import("./storage")).getDb();
-      const { sql: drizzleSql } = await import("drizzle-orm");
+      const db = getDb();
       if (vehicleType !== undefined) await db.execute(drizzleSql`UPDATE users SET vehicle_type = ${vehicleType} WHERE id = ${user.id}`);
       if (plate !== undefined) await db.execute(drizzleSql`UPDATE users SET plate = ${plate} WHERE id = ${user.id}`);
       if (phone !== undefined) await db.execute(drizzleSql`UPDATE users SET phone = ${phone} WHERE id = ${user.id}`);
