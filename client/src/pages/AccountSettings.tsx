@@ -12,7 +12,7 @@ import Navbar from "@/components/Navbar";
 import PaymentMethods from "@/components/PaymentMethods";
 import { ReviewList } from "@/components/ReviewSystem";
 
-const ROLES: { value: UserRole; label: string; icon: React.ReactNode; desc: string; color: string; fields: string[] }[] = [
+const ROLES: { value: UserRole; label: string; icon: React.ReactElement; desc: string; color: string; fields: string[] }[] = [
   { value: "traveler", label: "Viajero", icon: <User className="h-5 w-5" />, desc: "Explora destinos, hoteles y experiencias", color: "text-blue-400", fields: [] },
   { value: "hotel", label: "Hotel", icon: <Building2 className="h-5 w-5" />, desc: "Publica y administra tu alojamiento", color: "text-purple-400", fields: ["businessName", "businessAddress", "businessPhone"] },
   { value: "restaurant", label: "Restaurante", icon: <Utensils className="h-5 w-5" />, desc: "Promueve tu gastronomía local", color: "text-orange-400", fields: ["businessName", "businessAddress", "businessPhone"] },
@@ -272,7 +272,7 @@ export default function AccountSettings() {
                       <div key={roleVal} className={`flex items-center justify-between p-3 rounded-xl border ${isActive ? "border-primary/30 bg-primary/5" : "border-border/30 bg-secondary/10"}`}>
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${isActive ? "bg-primary/20" : "bg-secondary"}`}>
-                            {React.cloneElement(rd.icon as React.ReactElement, { className: `h-4 w-4 ${rd.color}` })}
+                            {React.cloneElement(rd.icon as React.ReactElement<any>, { className: `h-4 w-4 ${rd.color}` })}
                           </div>
                           <div>
                             <p className="font-medium text-sm">{rd.label}</p>
@@ -438,7 +438,7 @@ export default function AccountSettings() {
                   {showReviews && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                       <div className="pt-2">
-                        <ReviewList targetUsername={user.username} />
+                        <ReviewList username={user.username} />
                       </div>
                     </motion.div>
                   )}

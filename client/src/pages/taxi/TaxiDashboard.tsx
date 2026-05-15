@@ -149,7 +149,7 @@ export default function TaxiDashboard() {
               isAvailable={isAvailable}
               activeRide={activeRide ? {
                 id: Number(activeRide.id),
-                passengerName: activeRide.passengerName,
+                passengerName: (activeRide as any).passengerName || activeRide.travelerUsername,
                 originCoords: [parseFloat(activeRide.originLat), parseFloat(activeRide.originLng)] as [number, number],
                 destinationCoords: [parseFloat(activeRide.destinationLat), parseFloat(activeRide.destinationLng)] as [number, number],
                 originAddress: activeRide.originAddress ?? "",

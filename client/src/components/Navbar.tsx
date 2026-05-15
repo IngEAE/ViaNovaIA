@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth, UserRole } from "@/lib/auth";
 import { LogOut, User, Settings, Package, Building2, Utensils, TentTree, Car, Clock } from "lucide-react";
+import logoImg from "../assets/logo.jpeg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,7 +55,7 @@ export default function Navbar() {
                 transition={{ duration: 0.3 }}
                 className="rounded-lg overflow-hidden"
               >
-                <img src="/logo.jpeg" alt="VIANova" className="w-8 h-8 object-cover" />
+                <img src={logoImg} alt="VIANova" className="w-8 h-8 object-cover" />
               </motion.div>
               <span className="text-white"><span className="text-primary">VIA</span>Nova</span>
             </a>

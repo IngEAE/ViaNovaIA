@@ -317,7 +317,7 @@ export default function RideHistory() {
                                     authorRole={isTaxi ? "taxi" : "traveler"}
                                     onSubmitted={() => {
                                       setReviewingRide(null);
-                                      setReviewedRides(prev => new Set([...prev, ride.id]));
+                                      setReviewedRides(prev => new Set([...Array.from(prev), ride.id]));
                                     }}
                                     onCancel={() => setReviewingRide(null)}
                                   />
