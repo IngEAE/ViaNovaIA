@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import App from "./App";
 import "./index.css";
-
+import "./i18n";
 GoogleAuth.initialize({
   clientId: '963320565575-69dp01atb3oo5cmrhiq4uf2ca8fc2g79.apps.googleusercontent.com',
   scopes: ['profile', 'email'],
@@ -40,3 +40,13 @@ if (window.location.pathname === '/index.html') {
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+      console.log('ServiceWorker registrado:', registration.scope);
+    }).catch(error => {
+      console.log('ServiceWorker error:', error);
+    });
+  });
+}

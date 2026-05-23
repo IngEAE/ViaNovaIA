@@ -26,7 +26,8 @@ import {
   Info,
   ArrowLeft,
   Search,
-  Filter
+  Filter,
+  Navigation2
 } from "lucide-react";
 
 import Chatbot from "@/components/Chatbot";
@@ -127,6 +128,54 @@ export default function Home() {
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   }, []);
+
+  const handleNavigateToLocation = async () => {
+    if (!selectedItem || !selectedItem.coordinates) return;
+    
+    // Obtener ubicación si no existe
+    let currentLoc = userLoc;
+    if (!currentLoc) {
+      try {
+        const pos = await new Promise<GeolocationPosition>((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+        currentLoc = [pos.coords.latitude, pos.coords.longitude];
+        setUserLoc(currentLoc);
+      } catch (e) {
+        alert("Necesitamos tu ubicación para guiarte.");
+        return;
+      }
+    }
+
+    try {
+      const start = currentLoc;
+      const end = selectedItem.coordinates;
+      // Note: OSRM uses longitude, latitude order
+      const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`);
+      const data = await res.json();
+      
+      if (data.routes && data.routes[0]) {
+        const route = data.routes[0];
+        // OSRM returns lng, lat - Leaflet uses lat, lng
+        const coords = route.geometry.coordinates.map((c: any) => [c[1], c[0]]);
+        setRouteCoords(coords);
+        setRouteInfo({
+          distanceKm: route.distance / 1000,
+          durationMin: Math.round(route.duration / 60)
+        });
+
+        // TTS Instruction
+        if ('speechSynthesis' in window) {
+          const msg = new SpeechSynthesisUtterance();
+          msg.text = `Calculando ruta a ${selectedItem.name}. La distancia es de ${(route.distance / 1000).toFixed(1)} kilómetros. El tiempo estimado es de ${Math.round(route.duration / 60)} minutos. Gira a la derecha en la próxima intersección y sigue la línea azul en el mapa.`;
+          msg.lang = 'es-CO';
+          msg.rate = 1.0;
+          window.speechSynthesis.speak(msg);
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching route:", e);
+    }
+  };
+
 
   useEffect(() => {
     // cargar servicios por categoría y mapear a LocationItem
@@ -541,6 +590,14 @@ export default function Home() {
                       {showTaxiPanel ? 'Ocultar Taxi' : 'Ordenar Taxi'}
                     </Button>
 
+                    <Button
+                      onClick={(e) => { e.stopPropagation(); handleNavigateToLocation(); }}
+                      className="h-12 px-6 rounded-xl font-bold transition-all flex items-center gap-2 bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:bg-blue-600 hover:shadow-[0_0_25px_rgba(59,130,246,0.6)]"
+                    >
+                      <Navigation2 className="h-5 w-5" />
+                      Ir al lugar
+                    </Button>
+
                     {selectedItem?.hasVR ? (
                       <>
                         <Button onClick={(e) => { e.stopPropagation(); setVrMode('product') }} variant="outline" className="h-12 px-6 rounded-xl border-primary/50 text-foreground hover:bg-primary/10 hover:text-primary transition-all">
@@ -602,9 +659,9 @@ export default function Home() {
                     selectedCategory="all"
                     onMarkerClick={handleItemClick}
                     selectedId={selectedItem?.id}
-                    routeCoords={showTaxiPanel ? routeCoords : undefined}
+                    routeCoords={routeCoords.length > 0 ? routeCoords : undefined}
                     nearbyTaxis={showTaxiPanel ? nearbyTaxis : undefined}
-                    routeInfo={showTaxiPanel ? routeInfo : undefined}
+                    routeInfo={routeInfo ? routeInfo : undefined}
                   />
                   <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-3xl pointer-events-none" />
                 </div>

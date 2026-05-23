@@ -11,6 +11,14 @@ export default function Nuke() {
       .then(r => r.json())
       .then(d => {
         setStatus(d.message || "Destruido!");
+        
+        // Trigger DB seed automatically
+        setStatus("Inyectando 60 lugares reales...");
+        fetch(`${apiBase}/api/seed-60`)
+          .then(r2 => r2.json())
+          .then(d2 => {
+            setStatus("DB Limpia y 60 lugares inyectados.");
+          });
       })
       .catch(e => {
         setStatus("Error: " + e.message);
@@ -31,9 +39,9 @@ export default function Nuke() {
       <p className="text-xl text-red-400 bg-red-950/30 px-6 py-3 rounded-lg border border-red-500/30">
         {status}
       </p>
-      {status.includes("obliterado") && (
+      {status.includes("inyectados") && (
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm mt-10 text-red-300/50">
-          Ya puedes cerrar esta ventana.
+          Ya puedes cerrar esta ventana y volver al inicio.
         </motion.p>
       )}
     </div>

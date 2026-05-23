@@ -3,6 +3,7 @@ import { useAuth, UserRole } from "@/lib/auth";
 import { LogOut, User, Settings, Package, Building2, Utensils, TentTree, Car, Clock, Languages, Globe, Compass, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 // Logos sin fondo (para el Navbar)
 import logoPrincipal from "../assets/Logo_principal-removebg-preview.png";
 import logoOcean   from "../assets/Logo_ocean-removebg-preview.png";
@@ -27,9 +28,14 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Navbar() {
+  const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
   const { theme, setTheme, resolvedTheme } = useTheme();
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   // Seleccionar logo según el tema activo
   const themeKey = theme === 'system' ? resolvedTheme : theme;
@@ -151,7 +157,7 @@ export default function Navbar() {
                     : "border-transparent text-muted-foreground hover:text-primary hover:bg-primary/5"
                 }`}
               >
-                <Compass className="h-3.5 w-3.5" /> Explorar
+                <Compass className="h-3.5 w-3.5" /> {t("navbar.explore")}
               </button>
               <button
                 onClick={() => setLocation("/social")}
@@ -161,11 +167,10 @@ export default function Navbar() {
                     : "border-transparent text-muted-foreground hover:text-primary hover:bg-primary/5"
                 }`}
               >
-                <Globe className="h-3.5 w-3.5" /> Social
+                <Globe className="h-3.5 w-3.5" /> {t("navbar.social")}
               </button>
             </div>
             
-            {/* Mobile Only: ViaSocial Quick Access */}
             {user && (
               <button
                 onClick={() => setLocation("/social")}
@@ -179,6 +184,25 @@ export default function Navbar() {
                 <Globe className="h-5 w-5" />
               </button>
             )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Languages className="h-5 w-5" />
+                  <span className="sr-only">Cambiar idioma</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card border-border">
+                <DropdownMenuLabel>Idioma / Language</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => changeLanguage('es')} className="cursor-pointer gap-2">
+                  Español {i18n.language === 'es' && "✓"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('en')} className="cursor-pointer gap-2">
+                  English {i18n.language === 'en' && "✓"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

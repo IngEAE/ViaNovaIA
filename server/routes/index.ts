@@ -140,11 +140,37 @@ function getBaseUrl(req: import('express').Request): string {
   return `${String(proto).split(',')[0]}://${host}`.replace(/\/$/, '');
 }
 
+import { Server as SocketIOServer } from "socket.io";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   configureCloudinary();
+
+  // Setup Socket.IO
+  const io = new SocketIOServer(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  });
+
+  io.on("connection", (socket) => {
+    console.log("🟢 Nuevo cliente conectado:", socket.id);
+    
+    // Taxi Tracking: Recibir posición del taxi y emitir al viajero
+    socket.on("taxi_location_update", (data) => {
+      io.emit("taxi_location", data);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔴 Cliente desconectado:", socket.id);
+    });
+  });
+
+  // Make io accessible to routes
+  app.set("io", io);
   
   app.use("/api/bookings", bookingsRouter);
   app.use("/api/social", socialRouter);
@@ -162,6 +188,54 @@ export async function registerRoutes(
 
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true });
+  });
+
+  app.get("/api/seed-60", async (req, res, next) => {
+    try {
+      const db = getDb();
+      await db.execute(drizzleSql`DELETE FROM services WHERE name ILIKE '%test%' OR name ILIKE '%prueba%' OR name ILIKE '%hola%' OR name ILIKE '%mi negocio%' OR name ILIKE '%all stars%' OR name ILIKE '%perfect%' OR name = 'asdf'`);
+      
+      const newServices = [];
+      const cats = ['hotel', 'restaurant', 'recreation', 'transport'];
+      const images: Record<string, string[]> = {
+        hotel: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80', 'https://images.unsplash.com/photo-1551882547-ff40c0d5c9f4?w=800&q=80', 'https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=800&q=80', 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80', 'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800&q=80'],
+        restaurant: ['https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80', 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&q=80', 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80', 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80'],
+        recreation: ['https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=800&q=80', 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80', 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&q=80', 'https://images.unsplash.com/photo-1510853675132-58241c941e4f?w=800&q=80', 'https://images.unsplash.com/photo-1565214975484-3cfa9e56f914?w=800&q=80'],
+        transport: ['https://images.unsplash.com/photo-1600320254374-ce2d293c324e?w=800&q=80', 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80', 'https://images.unsplash.com/photo-1490650404312-a2175773bbf5?w=800&q=80', 'https://images.unsplash.com/photo-1506645292803-579c17d4ba6a?w=800&q=80', 'https://images.unsplash.com/photo-1612808264703-a1286c12ba3c?w=800&q=80']
+      };
+      const names: Record<string, string[]> = {
+        hotel: ['Grand Plaza', 'Eco Resort', 'Boutique Hotel', 'Royal Suites', 'Sunset Inn', 'Mountain View', 'City Center', 'Oasis Resort', 'Paradise Lodge', 'Emerald Hotel', 'Riverside Inn', 'Golden Palace', 'Silver Sands', 'Azure Retreat', 'Crystal Cove'],
+        restaurant: ['La Casona', 'Sabor Auténtico', 'El Fogón', 'Bistro 44', 'GastroBar', 'Cielo Rojo', 'Mesa de Autor', 'El Jardín', 'Terraza Grill', 'Mar y Tierra', 'Fuego Mágico', 'Sabores', 'Rincón Gourmet', 'La Piazza', 'Café Colonial'],
+        recreation: ['Parque Nacional', 'Reserva', 'Museo de Arte', 'Tour Histórico', 'Aventura', 'Sendero Mágico', 'Aguas Termales', 'Observatorio', 'Jardín Botánico', 'Ruinas Antiguas', 'Safari Local', 'Buceo Profundo', 'Escalada Libre', 'Paseo en Globo', 'Ruta del Café'],
+        transport: ['Taxi Express', 'Transporte VIP', 'Shuttle Aeropuerto', 'Tour Privado', 'Viajes Seguros', 'Ruta Rápida', 'Movilidad Plus', 'Traslados Premium', 'City Tour Bus', 'Transporte Ejecutivo', 'Van Familiar', 'Auto Clásico', 'Moto Taxi', 'Limusina Elite', 'Bote Turístico']
+      };
+      const descs = ['La mejor experiencia garantizada para ti y tu familia. Reservas disponibles todo el año.', 'Descubre algo nuevo y emocionante. Perfecto para escapadas de fin de semana.', 'Calidad, confort y atención de primera clase. Tu satisfacción es nuestra prioridad.', 'Disfruta de momentos inolvidables en el mejor ambiente de la ciudad.', 'Una opción económica y segura para disfrutar al máximo sin preocupaciones.'];
+      
+      for (const cat of cats) {
+        for (let i = 0; i < 15; i++) {
+          newServices.push({
+            provider_username: 'vianova_admin',
+            category: cat,
+            name: names[cat][i] + ' ' + (Math.floor(Math.random() * 100) + 1),
+            description: descs[Math.floor(Math.random() * descs.length)],
+            image_url: images[cat][Math.floor(Math.random() * images[cat].length)],
+            location_lat: (Math.random() * (5.0 - 3.0) + 3.0).toFixed(4),
+            location_lng: (Math.random() * (-73.0 - -75.0) + -75.0).toFixed(4),
+            rating: Math.floor(Math.random() * 2) + 4,
+            price: Math.floor(Math.random() * 500000) + 20000,
+            currency: 'COP'
+          });
+        }
+      }
+      
+      for (const s of newServices) {
+        await db.execute(drizzleSql`INSERT INTO services (provider_username, category, name, description, image_url, location_lat, location_lng, rating, price, currency) VALUES (${s.provider_username}, ${s.category}, ${s.name}, ${s.description}, ${s.image_url}, ${s.location_lat}, ${s.location_lng}, ${s.rating}, ${s.price}, ${s.currency})`);
+      }
+      
+      res.json({ success: true, message: "Cleaned DB and seeded 60 services." });
+    } catch (err) {
+      next(err);
+    }
   });
 
   // ─── AUTH: Register (always traveler) ────────────────────────────────────────
