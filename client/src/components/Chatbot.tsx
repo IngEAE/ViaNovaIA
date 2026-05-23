@@ -672,7 +672,7 @@ export default function Chatbot() {
                     <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-background animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-extrabold text-foreground text-lg tracking-tight">VIANova AI</h3>
+                    <h3 className="font-heading font-extrabold text-foreground text-lg tracking-tight notranslate">VIANova AI</h3>
                     <p className="text-xs text-primary/80 font-medium tracking-wide">Impulsado por Llama 3.1</p>
                   </div>
                 </div>

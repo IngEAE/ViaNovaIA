@@ -77,7 +77,7 @@ const HeroSection = ({ children }: { children?: React.ReactNode }) => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <h1 className="text-5xl md:text-7xl font-heading font-extrabold text-white tracking-tight mb-6">
-            {t('home.hero_title')} <br className="hidden md:block" /> <span className="text-primary drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">VIANova</span>
+            {t('home.hero_title')} <br className="hidden md:block" /> <span className="text-primary drop-shadow-[0_0_20px_rgba(255,215,0,0.5)] notranslate">VIANova</span>
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-light">
             {t('home.hero_subtitle')}

@@ -151,7 +151,7 @@ export default function Navbar() {
                 className="w-14 h-14 object-contain drop-shadow-md scale-125"
               />
             </motion.div>
-            <span className="text-foreground"><span className="text-primary">VIA</span>Nova</span>
+            <span className="text-foreground notranslate"><span className="text-primary">VIA</span>Nova</span>
           </button>
         </div>
 

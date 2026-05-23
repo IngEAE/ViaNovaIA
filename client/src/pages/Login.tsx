@@ -279,7 +279,7 @@ export default function Login() {
             <img src={logoPrincipal} alt="VIANova" className="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl" />
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="text-5xl font-heading font-extrabold tracking-tight mb-6">
-            Bienvenido a <span className="text-primary">VIANova</span>
+            Bienvenido a <span className="text-primary notranslate">VIANova</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="text-lg text-muted-foreground/80 leading-relaxed">
             Tu asistente inteligente de viaje. Descubre destinos increíbles, planifica rutas y conéctate con los mejores servicios locales.
@@ -293,7 +293,7 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="mb-8 lg:hidden flex flex-col items-center">
             <img src={logoPrincipal} alt="VIANova" className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl mb-2" />
-            <h1 className="text-3xl font-heading font-bold">VIANova</h1>
+            <h1 className="text-3xl font-heading font-bold notranslate">VIANova</h1>
           </div>
 
           {/* Message */}
