@@ -2,7 +2,16 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
+  "functions": {
+    "api/tts.py": {
+      "runtime": "vercel-python@4.0"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/tts",
+      "destination": "/api/tts.py"
+    },
     {
       "source": "/api/(.*)",
       "destination": "/api/index.ts"

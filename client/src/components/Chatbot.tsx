@@ -48,13 +48,9 @@ export default function Chatbot() {
   
   const messagesRef = useRef(messages);
   const recognitionRef = useRef<any>(null);
-  const synthRef = useRef<SpeechSynthesis | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const transcriptRef = useRef('');
   const isHandlingVoiceRef = useRef(false);
-
-  useEffect(() => {
-    synthRef.current = window.speechSynthesis;
-  }, []);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -116,45 +112,82 @@ export default function Chatbot() {
           recognitionRef.current.stop();
         } catch(e) {}
       }
-      if (synthRef.current) {
+      if (audioRef.current) {
         try {
-          synthRef.current.cancel();
+          audioRef.current.pause();
+          audioRef.current = null;
         } catch(e) {}
       }
     };
   }, []);
 
-  const playTTS = (text: string) => {
-    if (!synthRef.current) return;
-    
+  const playTTS = async (text: string) => {
     // Clean text from markdown and structural components for natural reading
     const cleanText = text
       .replace(/###.*/g, '')
       .replace(/\[.*?\]/g, '')
       .replace(/\*.*?\*/g, '')
-      .replace(/📋 Solicitudes de Reserva.*/g, '')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/📋 Solicitudes de Reserva[\s\S]*/g, '')
+      .replace(/[#*_~`>|]/g, '')
       .trim();
       
     if (!cleanText) return;
 
-    // "Kokoro TTS" mode behavior via Web Speech Synthesis API
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'es-ES';
-    utterance.rate = 1.05; 
-    utterance.pitch = 1.1;
-    
-    const voices = synthRef.current.getVoices();
-    const esVoices = voices.filter(v => v.lang.startsWith('es'));
-    if (esVoices.length > 0) {
-      // Prioritize modern/premium sounding voices
-      utterance.voice = esVoices.find(v => v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('female')) || esVoices[0];
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    
-    synthRef.current.cancel(); 
-    synthRef.current.speak(utterance);
+
+    setIsSpeaking(true);
+
+    try {
+      // Edge TTS – Microsoft Neural Voice (es-CO-SalomeNeural / colombiana)
+      const res = await fetch(apiBase + '/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText, voice: 'es-CO-SalomeNeural' })
+      });
+
+      if (!res.ok) throw new Error('TTS request failed');
+
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        audioRef.current = null;
+      };
+
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+        audioRef.current = null;
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.error('Edge TTS error, falling back to Web Speech:', err);
+      setIsSpeaking(false);
+      // Fallback: Web Speech API
+      try {
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'es-CO';
+        utterance.rate = 1.05;
+        utterance.pitch = 1.1;
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        synth.cancel();
+        synth.speak(utterance);
+      } catch (e) {
+        console.error('Fallback TTS also failed', e);
+      }
+    }
   };
 
   const toggleVoiceMode = () => {
@@ -162,7 +195,11 @@ export default function Chatbot() {
       setIsVoiceMode(false);
       setIsListening(false);
       recognitionRef.current?.stop();
-      if (synthRef.current) synthRef.current.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      try { window.speechSynthesis?.cancel(); } catch(e) {}
       setIsSpeaking(false);
       setVoiceTranscript('');
       transcriptRef.current = '';
@@ -176,7 +213,8 @@ export default function Chatbot() {
     if (recognitionRef.current && !isListening) {
       setVoiceTranscript('');
       transcriptRef.current = '';
-      if (synthRef.current) synthRef.current.cancel();
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+      try { window.speechSynthesis?.cancel(); } catch(e) {}
       setIsSpeaking(false);
       try {
         recognitionRef.current.start();
@@ -561,7 +599,7 @@ export default function Chatbot() {
                   </div>
                   <div>
                     <h3 className="font-heading font-extrabold text-foreground text-lg tracking-tight">VIANova AI</h3>
-                    <p className="text-xs text-primary/80 font-medium tracking-wide">Impulsado por Groq {isVoiceMode && "& TTS"}</p>
+                    <p className="text-xs text-primary/80 font-medium tracking-wide">Impulsado por Groq {isVoiceMode && "& Edge TTS 🇨🇴"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 relative z-10">
