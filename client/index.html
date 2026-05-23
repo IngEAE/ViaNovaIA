@@ -22,12 +22,11 @@
   <!-- Ocultar absolutamente todo de Google Translate desde el inicio -->
   <style>
     body { top: 0 !important; }
-    #google_translate_element, 
-    .skiptranslate iframe, 
+    [id^="goog"], 
+    [class^="goog-"], 
     .skiptranslate,
-    .goog-te-banner-frame, 
-    .goog-te-balloon-frame, 
-    #goog-gt-tt { 
+    .skiptranslate iframe,
+    #google_translate_element { 
       display: none !important; 
       visibility: hidden !important; 
       opacity: 0 !important; 
@@ -36,6 +35,7 @@
       position: absolute !important; 
       top: -10000px !important; 
       pointer-events: none !important;
+      z-index: -9999 !important;
     }
     .goog-text-highlight { 
       background-color: transparent !important; 
