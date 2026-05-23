@@ -201,6 +201,15 @@ export default function Navbar() {
                 <DropdownMenuItem onClick={() => changeLanguage('en')} className="cursor-pointer gap-2">
                   English {i18n.language === 'en' && "✓"}
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('fr')} className="cursor-pointer gap-2">
+                  Français {i18n.language === 'fr' && "✓"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('pt')} className="cursor-pointer gap-2">
+                  Português {i18n.language === 'pt' && "✓"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('zh')} className="cursor-pointer gap-2">
+                  中文 {i18n.language === 'zh' && "✓"}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 

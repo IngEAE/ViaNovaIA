@@ -1,5 +1,6 @@
 import { apiBase } from "@/lib/queryClient";
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import Navbar from "@/components/Navbar";
@@ -49,13 +50,14 @@ const HeroSection = ({ children }: { children?: React.ReactNode }) => {
     return () => clearInterval(int);
   }, []);
 
+  const { t } = useTranslation();
   return (
-    <section className="relative w-full h-[65vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+    <section className="relative w-full h-[600px] overflow-hidden bg-black/90">
       {heroImages.map((src, idx) => (
         <motion.div
-          key={idx}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{
+          key={src}
+          initial={{ opacity: 0 }}
+          animate={{ 
             opacity: heroIndex === idx ? 1 : 0,
             scale: heroIndex === idx ? 1 : 1.1
           }}
@@ -74,10 +76,10 @@ const HeroSection = ({ children }: { children?: React.ReactNode }) => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <h1 className="text-5xl md:text-7xl font-heading font-extrabold text-white tracking-tight mb-6">
-            Descubre el mundo con <br className="hidden md:block" /> <span className="text-primary drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">VIANova</span>
+            {t('home.hero_title')} <br className="hidden md:block" /> <span className="text-primary drop-shadow-[0_0_20px_rgba(255,215,0,0.5)]">VIANova</span>
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-light">
-            Explora los destinos más exclusivos, sabores inolvidables y experiencias inmersivas impulsadas por inteligencia artificial.
+            {t('home.hero_subtitle')}
           </p>
         </motion.div>
         
@@ -88,6 +90,7 @@ const HeroSection = ({ children }: { children?: React.ReactNode }) => {
 };
 
 export default function Home() {
+  const { t } = useTranslation();
   const { user, isAuthenticated, loading } = useAuth();
   const [_, setLocation] = useLocation();
 
@@ -325,7 +328,7 @@ export default function Home() {
                     <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors shrink-0" />
                     <input
                       type="text"
-                      placeholder="Buscar por nombre, descripción o ciudad..."
+                      placeholder={t('home.search_placeholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-transparent border-none outline-none focus:ring-0 px-4 text-sm md:text-base text-white placeholder:text-muted-foreground"
@@ -340,7 +343,7 @@ export default function Home() {
                         onChange={(e) => setDistanceFilter(e.target.value)}
                         className="w-full h-12 pl-9 pr-4 rounded-xl border border-transparent bg-secondary/30 hover:bg-secondary/50 text-sm appearance-none outline-none focus:border-primary/50 transition-colors"
                       >
-                        <option value="any">Distancia</option>
+                        <option value="any">{t('home.distance')}</option>
                         <option value="1">Menos de 1 km</option>
                         <option value="5">Menos de 5 km</option>
                         <option value="10">Menos de 10 km</option>
@@ -354,7 +357,7 @@ export default function Home() {
                         onChange={(e) => setPriceFilter(e.target.value)}
                         className="w-full h-12 pl-9 pr-4 rounded-xl border border-transparent bg-secondary/30 hover:bg-secondary/50 text-sm appearance-none outline-none focus:border-primary/50 transition-colors"
                       >
-                        <option value="any">Precio</option>
+                        <option value="any">{t('home.price')}</option>
                         <option value="$">Asequible ($)</option>
                         <option value="$$">Moderado ($$)</option>
                         <option value="$$$">Lujo ($$$)</option>
@@ -362,7 +365,7 @@ export default function Home() {
                     </div>
 
                     <Button className="w-full md:w-auto h-12 rounded-xl bg-primary text-black font-bold px-8 hover:bg-primary/90 transition-all">
-                      Explorar
+                      {t('home.explore_btn')}
                     </Button>
                   </div>
 
@@ -378,11 +381,11 @@ export default function Home() {
                   {/* Category Pills */}
                   <div className="flex flex-wrap gap-2 mb-8">
                     {[
-                      { id: 'all', label: 'Todos los Destinos', icon: null },
-                      { id: 'hotel', label: 'Alojamientos', icon: <Bed className="w-4 h-4" /> },
-                      { id: 'restaurant', label: 'Gastronomía', icon: <Utensils className="w-4 h-4" /> },
-                      { id: 'recreation', label: 'Experiencias', icon: <TentTree className="w-4 h-4" /> },
-                      { id: 'transport', label: 'Movilidad', icon: <Car className="w-4 h-4" /> }
+                      { id: 'all', label: t('categories.all'), icon: null },
+                      { id: 'hotel', label: t('categories.hotel'), icon: <Bed className="w-4 h-4" /> },
+                      { id: 'restaurant', label: t('categories.restaurant'), icon: <Utensils className="w-4 h-4" /> },
+                      { id: 'recreation', label: t('categories.recreation'), icon: <TentTree className="w-4 h-4" /> },
+                      { id: 'transport', label: t('categories.transport'), icon: <Car className="w-4 h-4" /> }
                     ].map(cat => (
                       <button
                         key={cat.id}
@@ -402,7 +405,7 @@ export default function Home() {
                   {filteredAll.length === 0 ? (
                     <div className="w-full py-20 text-center flex flex-col items-center justify-center opacity-60">
                       <Search className="h-16 w-16 mb-4 text-muted-foreground" />
-                      <h3 className="text-xl font-medium">No se encontraron resultados</h3>
+                      <h3 className="text-xl font-medium">{t('home.no_results')}</h3>
                       <p>Intenta ajustar tus filtros de búsqueda</p>
                     </div>
                   ) : (
@@ -587,7 +590,7 @@ export default function Home() {
                       }`}
                     >
                       <Car className="h-5 w-5" />
-                      {showTaxiPanel ? 'Ocultar Taxi' : 'Ordenar Taxi'}
+                      {showTaxiPanel ? t('home.hide_taxi') : t('home.order_taxi')}
                     </Button>
 
                     <Button
@@ -595,14 +598,14 @@ export default function Home() {
                       className="h-12 px-6 rounded-xl font-bold transition-all flex items-center gap-2 bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:bg-blue-600 hover:shadow-[0_0_25px_rgba(59,130,246,0.6)]"
                     >
                       <Navigation2 className="h-5 w-5" />
-                      Ir al lugar
+                      {t('home.navigate')}
                     </Button>
 
                     {selectedItem?.hasVR ? (
                       <>
                         <Button onClick={(e) => { e.stopPropagation(); setVrMode('product') }} variant="outline" className="h-12 px-6 rounded-xl border-primary/50 text-foreground hover:bg-primary/10 hover:text-primary transition-all">
                           <Box className="mr-2 h-5 w-5 text-primary" />
-                          Ver Modelo 3D
+                          {t('home.3d_model')}
                         </Button>
 
                         <Dialog open={vrMode === 'product'} onOpenChange={(open) => !open && setVrMode(null)}>
@@ -619,7 +622,7 @@ export default function Home() {
 
                         <Button onClick={(e) => { e.stopPropagation(); setVrMode('interior') }} className="h-12 px-8 rounded-xl bg-primary text-black font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-all">
                           <Eye className="mr-2 h-5 w-5" />
-                          Explorar Tour Virtual
+                          {t('home.virtual_tour')}
                         </Button>
 
                         <Dialog open={vrMode === 'interior'} onOpenChange={(open) => !open && setVrMode(null)}>
@@ -637,7 +640,7 @@ export default function Home() {
                     ) : (
                       <Button className="h-12 px-8 rounded-xl bg-primary text-black font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-all flex items-center gap-2">
                         <Info className="h-5 w-5" />
-                        Solicitar Información
+                        {t('home.ask_info')}
                       </Button>
                     )}
                   </div>

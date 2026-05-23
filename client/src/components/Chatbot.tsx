@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { apiBase } from "@/lib/queryClient";
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Image as ImageIcon, Loader2, Bot, Sparkles, MapPin, Hotel, UtensilsCrossed, Car, Ticket, CheckCircle2, Mic, MicOff, AudioLines } from 'lucide-react';
@@ -24,9 +25,10 @@ interface Message {
 }
 
 export default function Chatbot() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', role: 'assistant', content: '¡Hola! Soy VIANova, tu conserje inteligente. ¿A dónde viajaremos hoy?' }
+    { id: '1', role: 'assistant', content: t('chatbot.start') }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -897,7 +899,7 @@ export default function Chatbot() {
                     </Button>
                     <div className="flex-1 ml-12 pr-14">
                       <Input
-                        placeholder="Pregúntame sobre restaurantes, hoteles..."
+                        placeholder={t('chatbot.placeholder')}
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}

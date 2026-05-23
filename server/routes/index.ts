@@ -218,7 +218,7 @@ export async function registerRoutes(
             category: cat,
             name: names[cat][i] + ' ' + (Math.floor(Math.random() * 100) + 1),
             description: descs[Math.floor(Math.random() * descs.length)],
-            image_url: images[cat][Math.floor(Math.random() * images[cat].length)],
+            image_url: `https://picsum.photos/seed/${cat}${i}/800/600`,
             location_lat: (Math.random() * (5.0 - 3.0) + 3.0).toFixed(4),
             location_lng: (Math.random() * (-73.0 - -75.0) + -75.0).toFixed(4),
             rating: Math.floor(Math.random() * 2) + 4,
