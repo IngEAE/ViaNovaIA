@@ -19,6 +19,29 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <!-- Ocultar absolutamente todo de Google Translate desde el inicio -->
+  <style>
+    body { top: 0 !important; }
+    #google_translate_element, 
+    .skiptranslate iframe, 
+    .skiptranslate,
+    .goog-te-banner-frame, 
+    .goog-te-balloon-frame, 
+    #goog-gt-tt { 
+      display: none !important; 
+      visibility: hidden !important; 
+      opacity: 0 !important; 
+      height: 0 !important; 
+      width: 0 !important; 
+      position: absolute !important; 
+      top: -10000px !important; 
+      pointer-events: none !important;
+    }
+    .goog-text-highlight { 
+      background-color: transparent !important; 
+      box-shadow: none !important; 
+    }
+  </style>
 </head>
 
 <body>
