@@ -920,7 +920,7 @@ export async function registerRoutes(
 
   app.post("/api/chat", authLimiter, async (req, res, next) => {
     try {
-      let { userId, username, message, name, location, history, destinationCity } = req.body || {};
+      let { userId, username, message, name, location, history, destinationCity, language } = req.body || {};
       if (!message) return res.status(400).json({ message: "message required" });
 
       message = profanityFilter.clean(message);
@@ -1088,6 +1088,10 @@ export async function registerRoutes(
             // Dynamic turn counter to suppress greetings on ongoing conversations
             turnCount > 0
               ? { role: "system", content: `Esta conversación ya lleva ${turnCount} mensajes. NO saludes al usuario. Continúa el hilo directamente usando el historial.` }
+              : undefined,
+            // Language override
+            language
+              ? { role: "system", content: `You MUST respond entirely in this language code: ${language}. Translate your personality, tone, and all output (including the reservation formats) to this language.` }
               : undefined,
             ...historyMessages,
             { role: "user", content: message },

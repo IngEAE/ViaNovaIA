@@ -306,7 +306,8 @@ export default function Chatbot() {
           message: newUserMsg.content,
           location: sharedLocation,
           destinationCity: destinationCity.trim() || undefined,
-          history: messagesRef.current.slice(-14).map(m => ({ role: m.role, content: m.content }))
+          history: messagesRef.current.slice(-14).map(m => ({ role: m.role, content: m.content })),
+          language: i18n.language
         })
       });
       const data = await res.json();
@@ -368,7 +369,8 @@ export default function Chatbot() {
           message: newUserMsg.content,
           location: sharedLocation,
           destinationCity: destinationCity.trim() || undefined,
-          history: messages.slice(-14).map(m => ({ role: m.role, content: m.content }))
+          history: messages.slice(-14).map(m => ({ role: m.role, content: m.content })),
+          language: i18n.language
         })
       });
       const data = await res.json();
@@ -423,7 +425,8 @@ export default function Chatbot() {
             message: newUserMsg.content,
             location: loc,
             destinationCity: destinationCity.trim() || undefined,
-            history: messages.slice(-14).map(m => ({ role: m.role, content: m.content }))
+            history: messages.slice(-14).map(m => ({ role: m.role, content: m.content })),
+            language: i18n.language
           })
         });
         const data = await res.json();
@@ -473,7 +476,8 @@ export default function Chatbot() {
           message: newUserMsg.content,
           location: undefined,
           destinationCity: destinationCity.trim() || undefined,
-          history: messages.slice(-14).map(m => ({ role: m.role, content: m.content }))
+          history: messages.slice(-14).map(m => ({ role: m.role, content: m.content })),
+          language: i18n.language
         })
       });
       const data = await res.json();
