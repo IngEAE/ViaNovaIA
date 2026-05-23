@@ -520,12 +520,15 @@ export default function SocialFeed() {
       <div className="relative overflow-hidden border-b border-white/5 bg-gradient-to-r from-background via-primary/5 to-background">
         <div className="container max-w-2xl mx-auto px-4 py-10 text-center">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full text-xs font-bold text-primary uppercase tracking-widest mb-3">
-              <MapPin className="h-3 w-3" /> ViaSocial
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight">
-              Comparte tu <span className="text-primary">Aventura</span>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter flex justify-center items-center gap-3 mb-3">
+              <MapPin className="h-8 w-8 md:h-10 md:w-10 text-primary animate-bounce" />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-orange-400 to-primary bg-[length:300%] animate-gradient">
+                ViaSocial
+              </span>
             </h1>
+            <h2 className="text-2xl font-bold text-foreground/90">
+              Comparte tu <span className="text-primary">Aventura</span>
+            </h2>
             <p className="text-muted-foreground text-sm max-w-sm mx-auto">
               Hoteles, restaurantes, destinos — comparte tu experiencia con viajeros de todo el país.
             </p>

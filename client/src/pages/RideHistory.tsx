@@ -312,7 +312,7 @@ export default function RideHistory() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <p className="text-sm font-semibold truncate">{isService ? item.serviceName : item.destinationAddress}</p>
-                          <Badge className={`text-[10px] shrink-0 ${st.color}`}>{st.label}</Badge>
+                          <div className={`text-[11px] font-bold px-2.5 py-0.5 rounded-md border ${st.color}`}>{st.label}</div>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">

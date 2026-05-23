@@ -332,7 +332,7 @@ export default function AccountSettings() {
                           </div>
                           <div>
                             <p className="font-medium text-sm">{rd.label}</p>
-                            {isActive && <span className="text-[10px] text-primary uppercase font-bold tracking-wider">Activo</span>}
+                            {isActive && <div className="flex items-center gap-1.5 text-primary text-xs font-bold"><div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> Activo</div>}
                           </div>
                         </div>
                         {!isActive && (
@@ -432,7 +432,7 @@ export default function AccountSettings() {
                       <div>
                         <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-1">Placa</span>
                         {vehicleData.plate ? (
-                          <span className="inline-block bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded text-sm font-mono font-bold tracking-widest">{vehicleData.plate}</span>
+                          <span className="inline-flex items-center gap-2 bg-secondary/40 text-foreground border border-white/10 px-3 py-1.5 rounded-lg text-sm font-mono font-semibold shadow-inner">{vehicleData.plate}</span>
                         ) : (
                           <span className="text-muted-foreground/50 italic">No especificada</span>
                         )}
